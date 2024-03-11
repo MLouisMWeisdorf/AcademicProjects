@@ -1,0 +1,48 @@
+ml () {  module ml "$@"
+}
+module () {  _module_raw "$@" 2>&1
+}
+_module_raw () {  eval `/usr/bin/tclsh8.6 /usr/lib/x86_64-linux-gnu/modulecmd.tcl bash "$@"`;
+ _mlstatus=$?;
+ return $_mlstatus
+}
+#!/bin/bash
+# valgrind_test.sh
+# Author: Louis Weisdorf
+# Date: 05/03/2023
+# Description: Shell script to run valgrind on the 
+#          index.c and indextest.c.
+
+# Calling valgrind on a test call of the indexer function
+valgrind ./indexer ../../shared/tse/crawldata/letters-3 ../new-test-data/letters.index
+==3045537== Memcheck, a memory error detector
+==3045537== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==3045537== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==3045537== Command: ./indexer ../../shared/tse/crawldata/letters-3 ../new-test-data/letters.index
+==3045537== 
+==3045537== 
+==3045537== HEAP SUMMARY:
+==3045537==     in use at exit: 0 bytes in 0 blocks
+==3045537==   total heap usage: 1,502 allocs, 1,502 frees, 146,311 bytes allocated
+==3045537== 
+==3045537== All heap blocks were freed -- no leaks are possible
+==3045537== 
+==3045537== For lists of detected and suppressed errors, rerun with: -s
+==3045537== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+# Calling valgrind on a test call of the indextest function
+valgrind ./indextest ../new-test-data/letters.index ../new-test-data/new-letters.index
+==3045546== Memcheck, a memory error detector
+==3045546== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==3045546== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==3045546== Command: ./indextest ../new-test-data/letters.index ../new-test-data/new-letters.index
+==3045546== 
+==3045546== 
+==3045546== HEAP SUMMARY:
+==3045546==     in use at exit: 0 bytes in 0 blocks
+==3045546==   total heap usage: 896 allocs, 896 frees, 32,935 bytes allocated
+==3045546== 
+==3045546== All heap blocks were freed -- no leaks are possible
+==3045546== 
+==3045546== For lists of detected and suppressed errors, rerun with: -s
+==3045546== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

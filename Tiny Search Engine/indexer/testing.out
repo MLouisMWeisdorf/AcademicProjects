@@ -1,0 +1,69 @@
+ml () {  module ml "$@"
+}
+module () {  _module_raw "$@" 2>&1
+}
+_module_raw () {  eval `/usr/bin/tclsh8.6 /usr/lib/x86_64-linux-gnu/modulecmd.tcl bash "$@"`;
+ _mlstatus=$?;
+ return $_mlstatus
+}
+#!/bin/bash
+# testing.sh
+# Author: Louis Weisdorf
+# Date: 05/03/2023
+# Description: Shell script to test valid and invalid cases 
+#       for use of indexer.c program.
+
+### Erroneous arguments ###
+# No arguments
+./indexer
+
+Error: Invalid number of arguments passed.
+
+# One argument
+./indexer ../../shared/tse/crawldata/letters-3
+
+Error: Invalid number of arguments passed.
+
+# Three or more arguments
+./indexer ../../shared/tse/crawldata/letters-3 ../test-data/letters1.index ../test-data/letters2.index
+
+Error: Invalid number of arguments passed.
+
+# Non-existent pageDirectory
+./indexer ../../shared/tse/crawldata/letters-4 ../test-data/letters.index
+
+Error: Provided pageDirectory is invalid.
+
+# Non-crawler-produced pageDirectory
+mkdir ../test-data/non-crawler
+mkdir: cannot create directory '../test-data/non-crawler': File exists
+./indexer ../test-data/non-crawler ../test-data/letters.index
+
+Error: Provided pageDirectory is invalid.
+
+# Read-only directory 
+chmod -w ../test-data
+./indexer ../test-data/letters ../test-data/letters.index
+
+Error: Provided pageDirectory is invalid.
+
+# Read-only indexFile
+chmod +w ../test-data
+chmod -w ../test-data/letters.index
+./indexer ../../shared/tse/crawldata/letters-3 ../test-data/letters.index
+
+Error: Provided indexFilename is invalid.
+
+### Runs on various crawler-produced pageDirectories ###
+
+# On letters-3, followed by indexTest run and diff to check similarities
+mkdir -p ../new-test-data
+./indexer ../../shared/tse/crawldata/letters-3 ../new-test-data/letters.index
+./indextest ../new-test-data/letters.index ../new-test-data/new-letters.index
+diff ../new-test-data/letters.index ../new-test-data/new-letters.index
+
+# On wikipedia-1
+./indexer ../../shared/tse/crawldata/wikipedia_1 ../new-test-data/wikipedia.index
+
+echo
+
